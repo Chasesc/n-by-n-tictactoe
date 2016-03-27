@@ -18,17 +18,16 @@ def display_text(text, location):
 
 
 def draw_board():
-    #first vertical line
-    pygame.draw.line(screen, Const.WHITE, (Const.ONE_THIRD_WIDTH, 0), (Const.ONE_THIRD_WIDTH, Const.WINDOW_HEIGHT), Const.LINE_WIDTH)
 
-    #second vertical line
-    pygame.draw.line(screen, Const.WHITE, (Const.TWO_THIRD_WIDTH, 0), (Const.TWO_THIRD_WIDTH, Const.WINDOW_HEIGHT), Const.LINE_WIDTH)
+    # vertical line(s)
+    for i in range(1, Const.BOARD_N):
+        i_width_over_n = (i * Const.WINDOW_WIDTH) // Const.BOARD_N
+        pygame.draw.line(screen, Const.WHITE, (i_width_over_n, 0), (i_width_over_n, Const.WINDOW_HEIGHT), Const.LINE_WIDTH)
 
-    #first horizontal line
-    pygame.draw.line(screen, Const.WHITE, (0, Const.ONE_THIRD_HEIGHT), (Const.WINDOW_WIDTH, Const.ONE_THIRD_HEIGHT), Const.LINE_WIDTH)
-
-    #second horizontal line
-    pygame.draw.line(screen, Const.WHITE, (0, Const.TWO_THIRD_HEIGHT), (Const.WINDOW_WIDTH, Const.TWO_THIRD_HEIGHT), Const.LINE_WIDTH)
+    # horizontal line(s)
+    for i in range(1, Const.BOARD_N):
+        i_height_over_n = (i * Const.WINDOW_HEIGHT) // Const.BOARD_N
+        pygame.draw.line(screen, Const.WHITE, (0, i_height_over_n), (Const.WINDOW_WIDTH, i_height_over_n), Const.LINE_WIDTH)
 
 
 def draw_piece(location, current_piece, winner = False):
@@ -105,11 +104,10 @@ def draw_game(game_board, winners = []):
     pygame.display.flip() #Update the full screen
 
 
-# Util function, TODO: make this function generic?
+
 def get_coefficients(location):
-    coefficients = [
-        (1, 1), (3, 1), (5, 1),
-        (1, 3), (3, 3), (5, 3),
-        (1, 5), (3, 5), (5, 5)
-        ]
-    return coefficients[location]
+    loc_over_n = location // Const.BOARD_N
+    x = (2 * (location - (Const.BOARD_N * loc_over_n))) + 1
+    y = (2 * loc_over_n) + 1
+
+    return (x , y)

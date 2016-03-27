@@ -19,7 +19,7 @@ class RandomAgent(Agent):
 
         aval_moves = Rules.avaliable_moves(state)
 
-        if len(aval_moves) != 0: return choice(Rules.avaliable_moves(state))
+        if len(aval_moves) != 0: return choice(aval_moves)
         else: return 0
 
 ''' Agent that picks the move that maximizes utility assuming the opponent is playing to minimize utility. '''

@@ -153,27 +153,14 @@ class Rules(object):
     the top left would return 0 which is the first element on the board. '''
 def get_loc_from_mouse(mouse_location):
     # box_width and box_height are the width and height of a single game square.
-    box_width = Const.BOARD_N * Const.WINDOW_WIDTH // Const.BOARD_SIZE
-    box_height = Const.BOARD_N * Const.WINDOW_HEIGHT // Const.BOARD_SIZE
+    box_width = Const.WINDOW_WIDTH // Const.BOARD_N
+    box_height = Const.WINDOW_HEIGHT // Const.BOARD_N
 
-    two_box_width = 2 * box_width
-    two_box_height = 2 * box_height
-
-    three_box_width = 3 * box_width
-    three_box_height = 3 * box_height
+    print box_height
 
     x = mouse_location[0]
     y = mouse_location[1]
 
-    if x <= box_width and y <= box_height: return 0
-    elif x <= two_box_width and y <= box_height: return 1
-    elif x <= three_box_width and y <= box_height: return 2
-    elif x <= box_width and y <= two_box_height: return 3
-    elif x <= two_box_width and y <= two_box_height: return 4
-    elif x <= three_box_width and y <= two_box_height: return 5
-    elif x <= box_width and y <= three_box_height: return 6
-    elif x <= two_box_width and y <= three_box_height: return 7
-    elif x <= three_box_width and y <= three_box_height: return 8
-    else: raise Exception("Unable to determine correct index in get_loc_from_mouse!") # Shouldn't happen, but just in case.
+    return (x // box_width) + Const.BOARD_N * (y // box_height)
 
 

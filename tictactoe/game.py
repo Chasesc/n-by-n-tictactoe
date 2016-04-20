@@ -22,6 +22,7 @@ class Game(object):
             if Const.AI_DIFFICULTY == Const.AI_DIFFICULTY_EASY:
                 self.ai = tictactoeAgent.RandomAgent()
             elif Const.AI_DIFFICULTY == Const.AI_DIFFICULTY_HARD:
+                print "Warning: AI_DIFFICULTY_HARD is not yet implemented."
                 self.ai = tictactoeAgent.MiniMaxAgent()
             else: raise Exception("AI_DIFFICULTY in constants.py set to an invalid option.")
 
@@ -30,16 +31,16 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     self.running = False                   
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if not self.in_menu and Rules.winner is None:
+                    if not self.in_menu and Rules.winner is None and not self.game_state.is_ai_turn():
                         self.game_state.place(get_loc_from_mouse(event.pos))
-                        print self.game_state.get_current_player()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r: 
                         Game(self.game_state.is_against_ai()).run() # Restart the game.
 
             if Rules.is_terminal_state(self.game_state.get_board()):
                 # TODO: Ask the user if they want to play again.
-                         
+                
+                Rules.set_winners(self.game_state.get_board())                         
                 graphics.draw_game(self.game_state.get_board(), Rules.winner_indices)
             else:
                 if self.in_menu: graphics.draw_menu()
@@ -64,6 +65,10 @@ class GameState(object):
         self.__player_two = ['X', 'O'][not rand]
 
         self.__current_turn = self.__player_one if rand == 0 else self.__player_two # 'X' goes first
+
+        Rules.player_piece = self.__player_one
+        Rules.ai_piece = self.__player_two if against_ai else None
+        
 
     def is_against_ai(self):
         return self.__against_ai
@@ -92,7 +97,10 @@ class GameState(object):
         return str
 
 
-class Rules(object):
+class Rules(object):   
+
+    player_piece = None
+    ai_piece = None
 
     winner = None
     winner_indices = []
@@ -132,9 +140,7 @@ class Rules(object):
 
     @staticmethod
     def has_won(board, player):
-        won = Rules.diag_win(board, player) or Rules.col_win(board, player) or Rules.row_win(board, player)
-        if won: Rules.winner = player
-        return won
+        return Rules.diag_win(board, player) or Rules.col_win(board, player) or Rules.row_win(board, player)
 
     @staticmethod
     def either_won(board):
@@ -144,9 +150,15 @@ class Rules(object):
     def is_tie(board):
         return len(Rules.avaliable_moves(board)) == 0
 
+
     @staticmethod
     def is_terminal_state(board):
         return Rules.either_won(board) or Rules.is_tie(board)
+
+    @staticmethod
+    def set_winners(board):
+        if Rules.has_won(board, 'X'): Rules.winner = 'X'
+        elif Rules.has_won(board, 'O'): Rules.winner = 'O'
 
 
 ''' Returns the index to the board from a mouse_location.  For example, clicking in
@@ -155,8 +167,6 @@ def get_loc_from_mouse(mouse_location):
     # box_width and box_height are the width and height of a single game square.
     box_width = Const.WINDOW_WIDTH // Const.BOARD_N
     box_height = Const.WINDOW_HEIGHT // Const.BOARD_N
-
-    print box_height
 
     x = mouse_location[0]
     y = mouse_location[1]
